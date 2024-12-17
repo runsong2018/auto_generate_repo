@@ -1,0 +1,21 @@
+packageName: repository
+name: Game
+tableName: game
+fields:
+  - name: Id
+    type: int64
+    gorm: primaryKey
+    size: 8
+  - name: Name
+    type: string
+    option: fuzzy
+  - name: Owners
+    type: string
+  - name: NotificationList
+    type: string
+  - name: Description
+    type: string
+    option: fuzzy
+  - name: Attr
+    type: datatypes.JSON
+    gorm: type:jsonb;default:'{}'
