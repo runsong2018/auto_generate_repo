@@ -62,13 +62,13 @@ func (r *Repo) parse(reader io.Reader) (err error) {
 		}
 	}
 
+	r.fillDefaultColumn()
+
 	err = r.parseGorm()
 	if err != nil {
 		err = errors.New("GORM配置解析失败")
 		return
 	}
-
-	r.fillDefaultColumn()
 
 	return
 }
@@ -154,22 +154,27 @@ func (r *Repo) fillDefaultColumn() {
 		Name: "CreatedBy",
 		Type: "string",
 		Size: &size,
+		Gorm: "comment:创建者",
 	})
 	r.Fields = append(r.Fields, Field{
-		Name: "CreatedTs",
+		Name: "CreatedAt",
 		Type: "time.Time",
+		Gorm: "comment:创建时间",
 	})
 	r.Fields = append(r.Fields, Field{
 		Name: "ModifiedBy",
 		Type: "string",
 		Size: &size,
+		Gorm: "comment:修改者",
 	})
 	r.Fields = append(r.Fields, Field{
-		Name: "ModifiedTs",
+		Name: "ModifiedAt",
 		Type: "time.Time",
+		Gorm: "comment:修改时间",
 	})
 	r.Fields = append(r.Fields, Field{
 		Name: "DeletedAt",
 		Type: "time.Time",
+		Gorm: "comment:删除时间",
 	})
 }
