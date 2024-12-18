@@ -168,4 +168,8 @@ func (r *Repo) fillDefaultColumn() {
 		Name: "ModifiedTs",
 		Type: "time.Time",
 	})
+	r.Fields = append(r.Fields, Field{
+		Name: "DeletedAt",
+		Type: "time.Time",
+	})
 }

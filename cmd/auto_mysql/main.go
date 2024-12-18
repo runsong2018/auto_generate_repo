@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
-	"github.com/runsong2018/auto_generate_repo/internal/postgresql"
+	"github.com/runsong2018/auto_generate_repo/internal/mysql"
 	"github.com/runsong2018/auto_generate_repo/internal/repo"
 	"github.com/urfave/cli/v2"
 	"io/fs"
@@ -34,7 +34,7 @@ type Config struct {
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "auto_generate_postgresql_repo"
+	app.Name = "auto_generate_mysql_repo"
 	app.Usage = "depend on yaml file generate repo go file"
 	app.Version = version + " (" + build + ")"
 
@@ -108,7 +108,7 @@ func action() error {
 		}
 
 		output := bytes.NewBuffer(nil)
-		err = postgresql.Handle(context.Background(), repo, output)
+		err = mysql.Handle(context.Background(), repo, output)
 		if err != nil {
 			panic(err)
 		}
