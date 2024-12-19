@@ -71,11 +71,12 @@ func (d *default{{.Name}}Repository) Create{{.Name}}(ctx context.Context, data *
 }
 
 
-func (d *default{{.Name}}Repository) List{{.Name}}s(ctx context.Context,  options map[string]interface{}, query ...{{.Name}}QueryOption) (data []*{{.Name}}, err error) {
+func (d *default{{.Name}}Repository) List{{.Name}}s(ctx context.Context,  options map[string]interface{}, query ...{{.Name}}QueryOption) (data []*{{.Name}},count int64, err error) {
     exec := d.db.WithContext(ctx).Table({{.Name}}{}.TableName())
 	for _, v := range query {
     	exec = v(exec)
     }
+    exec = exec.Count(&count)
 	for key, val := range options {
 		switch key {
 		case "limit":
@@ -91,9 +92,9 @@ func (d *default{{.Name}}Repository) List{{.Name}}s(ctx context.Context,  option
 
 	err = exec.Find(&data).Error
     if err != nil {
-		return data, errors.Wrap(err, "failed to list the {{.Name}} entities")
+		return data,count, errors.Wrap(err, "failed to list the {{.Name}} entities")
 	}
-	return data,err
+	return data,count,err
 }
 
 
@@ -155,7 +156,7 @@ func (d *default{{.Name}}Repository) Delete{{.Name}}s(ctx context.Context,  ids 
 
 type {{.Name}}Repository interface {
 	Create{{.Name}}(ctx context.Context, data *{{.Name}}) (err error)
-	List{{.Name}}s(ctx context.Context, options map[string]interface{}, query ...{{.Name}}QueryOption) (data []*{{.Name}},err error)
+	List{{.Name}}s(ctx context.Context, options map[string]interface{}, query ...{{.Name}}QueryOption) (data []*{{.Name}},count int64,err error)
 	Get{{.Name}}(ctx context.Context, query *{{.Name}}) (data *{{.Name}}, err error)
 	Update{{.Name}}(ctx context.Context, update , query *{{.Name}}) (data *{{.Name}},err error)
 	Delete{{.Name}}(ctx context.Context,  query *{{.Name}}) (err error)
