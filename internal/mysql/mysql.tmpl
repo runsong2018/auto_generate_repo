@@ -64,7 +64,7 @@ func New{{.Name}}Repository(db *gorm.DB) {{.Name}}Repository {
 }
 
 func (d *default{{.Name}}Repository) Create{{.Name}}(ctx context.Context, data *{{.Name}}) (err error) {
-	if err := d.db.WithContext(ctx).Table({{.Name}}{}.TableName()).Create(data).Error; err != nil {
+	if err := d.db.WithContext(ctx).Model(&{{.Name}}{}).Create(data).Error; err != nil {
         return errors.Wrap(err, "failed to create {{.Name}} entity")
 	}
 	return nil
@@ -72,7 +72,7 @@ func (d *default{{.Name}}Repository) Create{{.Name}}(ctx context.Context, data *
 
 
 func (d *default{{.Name}}Repository) List{{.Name}}s(ctx context.Context,  options map[string]interface{}, query ...{{.Name}}QueryOption) (data []*{{.Name}},count int64, err error) {
-    exec := d.db.WithContext(ctx).Table({{.Name}}{}.TableName())
+    exec := d.db.WithContext(ctx).Model(&{{.Name}}{})
 	for _, v := range query {
     	exec = v(exec)
     }
@@ -100,7 +100,7 @@ func (d *default{{.Name}}Repository) List{{.Name}}s(ctx context.Context,  option
 
 func (d *default{{.Name}}Repository) Get{{.Name}}(ctx context.Context,  query *{{.Name}}) (data *{{.Name}}, err error) {
     data = &{{.Name}}{}
-    exec := d.db.WithContext(ctx).Table({{.Name}}{}.TableName())
+    exec := d.db.WithContext(ctx).Model(&{{.Name}}{})
 	exec = exec.Where(query)
 	err = exec.Last(data).Error
     if err != nil {
@@ -110,7 +110,7 @@ func (d *default{{.Name}}Repository) Get{{.Name}}(ctx context.Context,  query *{
 }
 
 func (d *default{{.Name}}Repository) Update{{.Name}}(ctx context.Context,update, query *{{.Name}}) (data *{{.Name}},err error) {
-	exec := d.db.WithContext(ctx).Table({{.Name}}{}.TableName())
+	exec := d.db.WithContext(ctx).Model(&{{.Name}}{})
     exec = exec.Where(query)
 	out := &{{.Name}}{}
 	result := exec.Updates(update)
@@ -133,7 +133,7 @@ func (d *default{{.Name}}Repository) Update{{.Name}}(ctx context.Context,update,
 }
 
 func (d *default{{.Name}}Repository) Delete{{.Name}}(ctx context.Context,  query *{{.Name}}) (err error){
-    exec := d.db.WithContext(ctx).Table({{.Name}}{}.TableName())
+    exec := d.db.WithContext(ctx).Model(&{{.Name}}{})
 	exec = exec.Where(query).Delete(&{{.Name}}{})
 	err = exec.Error
 	if err != nil {
@@ -143,10 +143,8 @@ func (d *default{{.Name}}Repository) Delete{{.Name}}(ctx context.Context,  query
 }
 
 func (d *default{{.Name}}Repository) Delete{{.Name}}s(ctx context.Context,  ids []any) (err error){
-    exec := d.db.WithContext(ctx).Table({{.Name}}{}.TableName())
-	for _, v := range ids {
-		exec = exec.Where("id <> ?", v)
-	}
+    exec := d.db.WithContext(ctx).Model(&{{.Name}}{})
+	exec = exec.Where("id in ?", ids)
 	err = exec.Delete(&{{.Name}}{}).Error
 	if err != nil {
 		return errors.Wrap(err, "failed to delete the {{.Name}}s")

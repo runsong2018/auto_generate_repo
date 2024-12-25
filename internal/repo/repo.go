@@ -174,7 +174,7 @@ func (r *Repo) fillDefaultColumn() {
 	})
 	r.Fields = append(r.Fields, Field{
 		Name: "DeletedAt",
-		Type: "time.Time",
+		Type: "gorm.DeletedAt",
 		Gorm: "comment:删除时间",
 	})
 }
