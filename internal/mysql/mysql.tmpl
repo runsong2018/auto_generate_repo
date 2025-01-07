@@ -30,14 +30,6 @@ func ({{.Name}} {{.Name}}) TableName() string {
     return "{{.TableName}}"
 }
 
-func ({{.Name}} *{{.Name}}) BuildQuery() {{.Name}}QueryOption {
-	g := {{.Name}}
-	return func(db *gorm.DB) *gorm.DB {
-		db = db.Where(g)
-		return db
-	}
-}
-
 func ({{.Name}} *{{.Name}}) BuildFuzzyQuery() {{.Name}}QueryOption {
 	g := {{.Name}}
 	return func(db *gorm.DB) *gorm.DB {
@@ -45,10 +37,19 @@ func ({{.Name}} *{{.Name}}) BuildFuzzyQuery() {{.Name}}QueryOption {
 	    {{- if eq .Option "fuzzy" }}
             if g.{{.Name}} != nil {
         		db = db.Where("{{.Name|SnakeString}} like ?", "%"+*g.{{.Name}}+"%")
+        		g.{{.Name}} = nil
         	}
         {{- end }}
 	    {{- end }}
 
+		return db
+	}
+}
+
+func ({{.Name}} *{{.Name}}) BuildQuery() {{.Name}}QueryOption {
+	g := {{.Name}}
+	return func(db *gorm.DB) *gorm.DB {
+		db = db.Where(g)
 		return db
 	}
 }
@@ -120,11 +121,7 @@ func (d *default{{.Name}}Repository) Update{{.Name}}(ctx context.Context,update,
 	if result.RowsAffected == 0 {
 		return nil, gorm.ErrRecordNotFound
 	}
-	err = result.Row().Scan(
-	{{- range $key,$value := .Fields }}
-        &out.{{.Name}},
-    {{- end }}
-	)
+	err = result.Scan(&out).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to update {{.Name}} entity")
 	}
