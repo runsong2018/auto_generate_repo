@@ -17,10 +17,10 @@ type QueryOption func(db *gorm.DB) *gorm.DB
 
 type  struct {
     CreatedBy *string `json:"created_by,omitempty" gorm:"size:100;comment:创建者"`
-    CreatedAt *time.Time `json:"created_at,omitempty" gorm:"comment:创建时间"`
+    CreatedAt *time.Time `json:"created_at,omitempty" gorm:"index;comment:创建时间"`
     ModifiedBy *string `json:"modified_by,omitempty" gorm:"size:100;comment:修改者"`
-    ModifiedAt *time.Time `json:"modified_at,omitempty" gorm:"comment:修改时间"`
-    DeletedAt *gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"comment:删除时间"`
+    ModifiedAt *time.Time `json:"modified_at,omitempty" gorm:"index;comment:修改时间"`
+    DeletedAt *gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index;comment:删除时间"`
 }
 
 func ( ) TableName() string {
@@ -110,13 +110,7 @@ func (d *defaultRepository) Update(ctx context.Context,update, query *) (data *,
 	if result.RowsAffected == 0 {
 		return nil, gorm.ErrRecordNotFound
 	}
-	err = result.Row().Scan(
-        &out.CreatedBy,
-        &out.CreatedAt,
-        &out.ModifiedBy,
-        &out.ModifiedAt,
-        &out.DeletedAt,
-	)
+	err = result.Scan(&out).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to update  entity")
 	}

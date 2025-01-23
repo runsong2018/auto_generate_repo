@@ -7,6 +7,7 @@ package {{.PackageName}}
 
 import (
     "time"
+    "strings"
 	"context"
 
 	"gorm.io/gorm"
@@ -66,6 +67,9 @@ func New{{.Name}}Repository(db *gorm.DB) {{.Name}}Repository {
 
 func (d *default{{.Name}}Repository) Create{{.Name}}(ctx context.Context, data *{{.Name}}) (err error) {
 	if err := d.db.WithContext(ctx).Model(&{{.Name}}{}).Create(data).Error; err != nil {
+		if strings.Contains(err.Error(),"Duplicate") {
+			return gorm.ErrDuplicatedKey
+		}
         return errors.Wrap(err, "failed to create {{.Name}} entity")
 	}
 	return nil
@@ -85,10 +89,14 @@ func (d *default{{.Name}}Repository) List{{.Name}}s(ctx context.Context,  option
 		case "offset":
 			exec = exec.Offset(val.(int))
 		case "sort":
-			exec = exec.Order(val).Order("id ASC")
+			exec = exec.Order(val)
 		case "select":
 			exec = exec.Select(val)
 		}
+	}
+
+	if options["sort"] == nil {
+	    exec = exec.Order("id DESC")
 	}
 
 	err = exec.Find(&data).Error

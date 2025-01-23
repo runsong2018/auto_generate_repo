@@ -103,7 +103,7 @@ func (r *Repo) parseGorm() (err error) {
 		var indexName string
 
 		if index.Unique {
-			indexName = "unique_index:idx"
+			indexName = "unique_index:uk"
 		} else {
 			indexName = "index:idx"
 		}
@@ -159,7 +159,7 @@ func (r *Repo) fillDefaultColumn() {
 	r.Fields = append(r.Fields, Field{
 		Name: "CreatedAt",
 		Type: "time.Time",
-		Gorm: "comment:创建时间",
+		Gorm: "index;comment:创建时间",
 	})
 	r.Fields = append(r.Fields, Field{
 		Name: "ModifiedBy",
@@ -170,11 +170,11 @@ func (r *Repo) fillDefaultColumn() {
 	r.Fields = append(r.Fields, Field{
 		Name: "ModifiedAt",
 		Type: "time.Time",
-		Gorm: "comment:修改时间",
+		Gorm: "index;comment:修改时间",
 	})
 	r.Fields = append(r.Fields, Field{
 		Name: "DeletedAt",
 		Type: "gorm.DeletedAt",
-		Gorm: "comment:删除时间",
+		Gorm: "index;comment:删除时间",
 	})
 }
